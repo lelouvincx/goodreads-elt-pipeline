@@ -1,0 +1,5 @@
+load_from:
+  - grpc_server:
+      host: elt_pipeline
+      port: 4000
+      location_name: "elt_pipeline"

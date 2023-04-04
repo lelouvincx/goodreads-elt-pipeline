@@ -1,3 +1,19 @@
-/dataset
+# Python env
+venv/
 Pipfile.lock
-/streamlit
+
+.env
+.cache*
+__pycache__/
+storage/
+minio/
+dataset/
+streamlit/
+.coverage
+
+# dagster
+dagster_home/logs/
+dagster_home/.logs_queue/
+dagster_home/.telemetry/
+dagster_home/history/
+dagster_home/schedules/*

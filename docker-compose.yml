@@ -1,0 +1,142 @@
+version: "3.9"
+services:
+  de_mysql:
+    image: mysql:8.0
+    container_name: de_mysql
+    volumes:
+      - ./storage/mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    env_file: .env
+    networks:
+      - de_network
+  de_psql:
+    image: postgres:14-alpine
+    container_name: de_psql
+    volumes:
+      - ./storage/postgres_data:/var/lib/postgresql/data
+      - ./pg_hba.conf:/tmp/pg_hba.conf
+    command: ["postgres", "-c", "hba_file=/tmp/pg_hba.conf"]
+    ports:
+      - "5432:5432"
+    env_file: .env
+    networks:
+      - de_network
+  minio:
+    hostname: minio
+    image: quay.io/minio/minio:latest
+    container_name: minio
+    command: ["server", "/data", "--console-address", ":9001"]
+    volumes:
+      - minio:/data
+    ports:
+      - "9001:9001"
+      - "9000:9000"
+    env_file: .env
+    networks:
+      - de_network
+  mc:
+    image: minio/mc
+    container_name: mc
+    hostname: mc
+    env_file: .env
+    entrypoint: /bin/sh -c " until (/usr/bin/mc config host add minio http://minio:9000
+      minio minio123) do echo '...waiting...' && sleep 1; done; /usr/bin/mc mb minio/warehouse;
+      /usr/bin/mc policy set public minio/warehouse; exit 0; "
+    depends_on:
+      - minio
+    networks:
+      - de_network
+  de_dagster_dagit:
+    image: de_dagster:latest
+    entrypoint:
+      - dagit
+      - -h
+      - "0.0.0.0"
+      - -p
+      - "3001"
+      - -w
+      - workspace.yaml
+    container_name: de_dagster_dagit
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./dagster_home:/opt/dagster/dagster_home
+    ports:
+      - "3001:3001"
+    env_file: .env
+    networks:
+      - de_network
+  de_dagster_daemon:
+    image: de_dagster:latest
+    entrypoint:
+      - dagster-daemon
+      - run
+    container_name: de_dagster_daemon
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./dagster_home:/opt/dagster/dagster_home
+    env_file: .env
+    networks:
+      - de_network
+  spark_master:
+    image: spark_master:latest
+    container_name: spark-master
+    volumes:
+      - ./dockerimages/spark/spark-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+    environment:
+      - SPARK_MODE=master
+      - SPARK_LOCAL_IP=spark-master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    networks:
+      - de_network
+  spark-worker-1:
+    image: docker.io/bitnami/spark:3.3
+    container_name: spark-worker-1
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=2G
+      - SPARK_WORKER_CORES=1
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    networks:
+      - de_network
+  spark-worker-2:
+    image: docker.io/bitnami/spark:3.3
+    container_name: spark-worker-2
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=2G
+      - SPARK_WORKER_CORES=1
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    networks:
+      - de_network
+  elt_pipeline:
+    build:
+      context: ./elt_pipeline
+    container_name: elt_pipeline
+    image: elt_pipeline:latest
+    volumes:
+      - ./elt_pipeline:/opt/dagster/app/elt_pipeline
+    env_file: .env
+    networks:
+      - de_network
+networks:
+  de_network:
+    driver: bridge
+    name: de_network
+volumes:
+  minio: {}
+  storage: {}
