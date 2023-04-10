@@ -5,6 +5,8 @@ services:
     container_name: de_mysql
     volumes:
       - ./storage/mysql_data:/var/lib/mysql
+      - ./dataset:/tmp/dataset
+      - ./load_dataset:/tmp/load_dataset
     ports:
       - "3306:3306"
     env_file: .env
@@ -16,6 +18,7 @@ services:
     volumes:
       - ./storage/postgres_data:/var/lib/postgresql/data
       - ./pg_hba.conf:/tmp/pg_hba.conf
+      - ./load_dataset:/tmp/load_dataset
     command: ["postgres", "-c", "hba_file=/tmp/pg_hba.conf"]
     ports:
       - "5432:5432"
@@ -41,8 +44,8 @@ services:
     hostname: mc
     env_file: .env
     entrypoint: /bin/sh -c " until (/usr/bin/mc config host add minio http://minio:9000
-      minio minio123) do echo '...waiting...' && sleep 1; done; /usr/bin/mc mb minio/warehouse;
-      /usr/bin/mc policy set public minio/warehouse; exit 0; "
+      minio minio123) do echo '...waiting...' && sleep 1; done; /usr/bin/mc mb minio/lakehouse;
+      /usr/bin/mc policy set public minio/lakehouse; exit 0; "
     depends_on:
       - minio
     networks:
@@ -78,59 +81,40 @@ services:
     env_file: .env
     networks:
       - de_network
-  spark_master:
+  spark-master:
+    build:
+      context: ./dockerimages/spark
+      dockerfile: Dockerfile
     image: spark_master:latest
     container_name: spark-master
     volumes:
       - ./dockerimages/spark/spark-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf
+    expose:
+      - "7077"
     ports:
       - "7077:7077"
       - "8080:8080"
-    environment:
-      - SPARK_MODE=master
-      - SPARK_LOCAL_IP=spark-master
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
+    env_file: .spark_master.env
     networks:
       - de_network
-  spark-worker-1:
-    image: docker.io/bitnami/spark:3.3
-    container_name: spark-worker-1
-    environment:
-      - SPARK_MODE=worker
-      - SPARK_MASTER_URL=spark://spark-master:7077
-      - SPARK_WORKER_MEMORY=2G
-      - SPARK_WORKER_CORES=1
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-    networks:
-      - de_network
-  spark-worker-2:
-    image: docker.io/bitnami/spark:3.3
-    container_name: spark-worker-2
-    environment:
-      - SPARK_MODE=worker
-      - SPARK_MASTER_URL=spark://spark-master:7077
-      - SPARK_WORKER_MEMORY=2G
-      - SPARK_WORKER_CORES=1
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
+  spark-worker:
+    image: docker.io/bitnami/spark:3.3.2
+    env_file: .spark_worker.env
+    deploy:
+      replicas: 2
     networks:
       - de_network
   elt_pipeline:
     build:
       context: ./elt_pipeline
-    container_name: elt_pipeline
+      dockerfile: Dockerfile
     image: elt_pipeline:latest
+    container_name: elt_pipeline
     volumes:
       - ./elt_pipeline:/opt/dagster/app/elt_pipeline
     env_file: .env
+    ports:
+      - "4040:4040"
     networks:
       - de_network
 networks:

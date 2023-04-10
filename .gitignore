@@ -3,6 +3,8 @@ venv/
 Pipfile.lock
 
 .env
+.spark_master.env
+.spark_worker.env
 .cache*
 __pycache__/
 storage/
@@ -10,6 +12,11 @@ minio/
 dataset/
 streamlit/
 .coverage
+
+# Google secrets
+gdrive_client_secret.json
+client_secret.json
+token_drive_v3.pickle
 
 # dagster
 dagster_home/logs/

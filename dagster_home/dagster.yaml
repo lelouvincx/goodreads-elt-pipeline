@@ -1,13 +1,3 @@
-run_coordinator:
-  module: dagster.core.run_coordinator
-  class: QueuedRunCoordinator
-  config:
-    max_concurrent_runs: 3
-scheduler:
-  module: dagster.core.scheduler
-  class: DagsterDaemonScheduler
-  config:
-    max_catchup_runs: 5
 storage:
   postgres:
     postgres_db:
@@ -23,6 +13,12 @@ storage:
 run_launcher:
   module: dagster.core.launcher
   class: DefaultRunLauncher
+run_coordinator:
+  module: dagster.core.run_coordinator
+  class: QueuedRunCoordinator
+  config:
+    max_concurrent_runs:
+      env: DAGSTER_OVERALL_CONCURRENCY_LIMIT
 compute_logs:
   module: dagster.core.storage.local_compute_log_manager
   class: LocalComputeLogManager
@@ -33,3 +29,11 @@ local_artifact_storage:
   class: LocalArtifactStorage
   config:
     base_dir: /opt/dagster/dagster_home/local_artifact_storage
+telemetry:
+  enabled: true
+sensors:
+  use_threads: true
+  num_workers: 3
+schedules:
+  use_threads: true
+  num_workers: 3
