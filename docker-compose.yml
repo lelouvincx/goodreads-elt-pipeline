@@ -101,7 +101,7 @@ services:
     image: docker.io/bitnami/spark:3.3.2
     env_file: .spark_worker.env
     deploy:
-      replicas: 2
+      replicas: 3
     networks:
       - de_network
   elt_pipeline:

@@ -12,12 +12,6 @@ def connect_mysql(config) -> str:
     )
     return conn_info
 
-    # db_conn = create_engine(conn_info)
-    # try:
-    #     yield db_conn
-    # except Exception as e:
-    #     raise e
-
 
 class MySQLIOManager(IOManager):
     def __init__(self, config):
