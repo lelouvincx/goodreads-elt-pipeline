@@ -6,15 +6,15 @@ USE goodreads;
 -- Load books
 DROP TABLE IF EXISTS goodreads.book;
 CREATE TABLE goodreads.book (
-  Id INT NOT NULL AUTO_INCREMENT,
-  Name VARCHAR(255),
-  Authors VARCHAR(255),
+  Id INT NOT NULL,
+  Name VARCHAR(31),
+  Authors VARCHAR(31),
   ISBN VARCHAR(31),
-  Rating DOUBLE PRECISION,
+  Rating FLOAT,
   PublishYear VARCHAR(31),
   PublishMonth INT,
   PublishDay INT,
-  Publisher VARCHAR(255),
+  Publisher VARCHAR(31),
   RatingDist5 VARCHAR(31),
   RatingDist4 VARCHAR(31),
   RatingDist3 VARCHAR(31),

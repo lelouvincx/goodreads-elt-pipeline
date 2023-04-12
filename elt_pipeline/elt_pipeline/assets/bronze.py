@@ -3,7 +3,7 @@ import polars as pl
 from datetime import datetime
 
 
-COMPUTE_KIND = "MySQL"
+COMPUTE_KIND = "SQL"
 LAYER = "bronze"
 
 
@@ -118,7 +118,7 @@ def bronze_book_download_link(context) -> Output[pl.DataFrame]:
             key_prefix=["bronze", "goodreads"],
         )
     },
-    compute_kind="GDrive",
+    compute_kind="Drive",
     group_name=LAYER,
 )
 def bronze_images_and_files_download(

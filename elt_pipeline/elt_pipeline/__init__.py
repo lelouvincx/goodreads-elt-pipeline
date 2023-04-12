@@ -66,6 +66,8 @@ defs = Definitions(
         bronze_book_genre,
         bronze_book_download_link,
         bronze_images_and_files_download,
+        silver_cleaned_book,
+        silver_cleaned_genre,
     ],
     resources={
         "mysql_io_manager": MySQLIOManager(MYSQL_CONFIG),

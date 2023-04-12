@@ -1,3 +1,4 @@
+pandas==1.5.3
 polars==0.16.16
 dagit==1.2.3
 dagster==1.2.3

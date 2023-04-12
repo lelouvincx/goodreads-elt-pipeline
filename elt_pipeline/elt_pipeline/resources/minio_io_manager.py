@@ -55,9 +55,9 @@ class MinIOIOManager(IOManager):
             start, end = context.asset_partitions_time_window
             dt_format = "%Y%m%d%H%M%S"
             partition_str = start.strftime(dt_format) + "_" + end.strftime(dt_format)
-            return os.path.join(key, f"{partition_str}.pq"), tmp_file_path
+            return os.path.join(key, f"{partition_str}.parquet"), tmp_file_path
         else:
-            return f"{key}.pq", tmp_file_path
+            return f"{key}.parquet", tmp_file_path
 
     def handle_output(self, context: "OutputContext", obj: pl.DataFrame):
         """
