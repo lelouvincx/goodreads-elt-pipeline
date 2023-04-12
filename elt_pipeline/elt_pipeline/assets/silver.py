@@ -1,12 +1,21 @@
-from dagster import asset, AssetIn, Output
+from dagster import asset, AssetIn, Output, StaticPartitionsDefinition
+from datetime import datetime
 import polars as pl
 import os
 
 from ..resources.spark_io_manager import get_spark_session
 
 
+COMPUTE_KIND = "PySpark"
+LAYER = "silver"
+YEARLY = StaticPartitionsDefinition(
+    [str(year) for year in range(1900, datetime.today().year)]
+)
+
+
 @asset(
     description="Load book table from bronze layer in minIO, into a Spark dataframe, then clean data",
+    partitions_def=YEARLY,
     ins={
         "bronze_book": AssetIn(
             key_prefix=["bronze", "goodreads"],
@@ -14,13 +23,14 @@ from ..resources.spark_io_manager import get_spark_session
     },
     io_manager_key="spark_io_manager",
     key_prefix=["silver", "goodreads"],
-    compute_kind="PySpark",
-    group_name="silver",
+    compute_kind=COMPUTE_KIND,
+    group_name=LAYER,
 )
 def silver_cleaned_book(context, bronze_book: pl.DataFrame):
     """
     Load book table from bronze layer in minIO, into a Spark dataframe, then clean data
     """
+    # BUG: Not implement partitioned
 
     config = {
         "endpoint_url": os.getenv("MINIO_ENDPOINT"),
@@ -31,9 +41,10 @@ def silver_cleaned_book(context, bronze_book: pl.DataFrame):
     context.log.debug("Start creating spark session")
     # Convert bronze_book from polars DataFrame to Spark DataFrame
     with get_spark_session(config) as spark:
-        bronze_book = bronze_book[:100]
         pandas_df = bronze_book.to_pandas()
-        context.log.debug(f"Got pandas DataFrame with shape: {pandas_df.shape}")
+        context.log.debug(
+            f"Converted to pandas DataFrame with shape: {pandas_df.shape}"
+        )
 
         context.log.debug("Converting bronze_book to Spark DataFrame...")
         spark_df = spark.createDataFrame(pandas_df)
@@ -60,8 +71,8 @@ def silver_cleaned_book(context, bronze_book: pl.DataFrame):
     },
     io_manager_key="spark_io_manager",
     key_prefix=["silver", "goodreads"],
-    compute_kind="PySpark",
-    group_name="silver",
+    compute_kind=COMPUTE_KIND,
+    group_name=LAYER,
 )
 def silver_cleaned_genre(context, bronze_genre: pl.DataFrame):
     """

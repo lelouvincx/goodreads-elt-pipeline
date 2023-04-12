@@ -1,10 +1,13 @@
-from dagster import AssetIn, asset, Output
-import polars as pl
+from dagster import asset, AssetIn, Output, StaticPartitionsDefinition
 from datetime import datetime
+import polars as pl
 
 
 COMPUTE_KIND = "SQL"
 LAYER = "bronze"
+YEARLY = StaticPartitionsDefinition(
+    [str(year) for year in range(1900, datetime.today().year)]
+)
 
 
 # genre from my_sql
@@ -35,6 +38,7 @@ def bronze_genre(context) -> Output[pl.DataFrame]:
 # book from my_sql
 @asset(
     description="Load table 'book' from MySQL database as polars DataFrame, and save to minIO",
+    partitions_def=YEARLY,
     io_manager_key="minio_io_manager",
     required_resource_keys={"mysql_io_manager"},
     key_prefix=["bronze", "goodreads"],
@@ -42,7 +46,15 @@ def bronze_genre(context) -> Output[pl.DataFrame]:
     group_name=LAYER,
 )
 def bronze_book(context) -> Output[pl.DataFrame]:
-    query = "SELECT * FROM book;"
+    query = "SELECT * FROM book"
+    try:
+        partion_year_str = context.asset_partition_key_for_output()
+        partition_by = "PublishYear"
+        query += f" WHERE {partition_by} = {partion_year_str}"
+        context.log.info(f"Partition by {partition_by} = {partion_year_str}")
+    except Exception:
+        context.log.info("No partition key found, full load data")
+
     df_data = context.resources.mysql_io_manager.extract_data(query)
     context.log.info(f"Table extracted with shape: {df_data.shape}")
 
@@ -118,7 +130,7 @@ def bronze_book_download_link(context) -> Output[pl.DataFrame]:
             key_prefix=["bronze", "goodreads"],
         )
     },
-    compute_kind="Drive",
+    compute_kind="google drive",
     group_name=LAYER,
 )
 def bronze_images_and_files_download(

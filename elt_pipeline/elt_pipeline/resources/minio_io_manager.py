@@ -46,17 +46,19 @@ class MinIOIOManager(IOManager):
         layer, schema, table = context.asset_key.path
         # NOTE: E.g: bronze/goodreads/book
         key = "/".join([layer, schema, table.replace(f"{layer}_", "")])
-        # NOTE: E.g: /tmp/file_bronze_goodreads_book_20210818100000.parquet
+        # E.g /tmp/file_bronze_goodreads_book_20210101000000.parquet
         tmp_file_path = "/tmp/file_{}_{}.parquet".format(
             "_".join(context.asset_key.path), datetime.today().strftime("%Y%m%d%H%M%S")
-        )
+        )  # Partition by year
 
-        if context.has_asset_partitions:  # WARN: Partition by date
-            start, end = context.asset_partitions_time_window
-            dt_format = "%Y%m%d%H%M%S"
-            partition_str = start.strftime(dt_format) + "_" + end.strftime(dt_format)
+        if context.has_partition_key:
+            # E.g partition_str: book_2021
+            partition_str = str(table) + "_" + context.asset_partition_key
+            # E.g key_name: bronze/goodreads/book/book_2021.parquet
+            # tmp_file_path: /tmp/file_bronze_goodreads_book_20210101000000.parquet
             return os.path.join(key, f"{partition_str}.parquet"), tmp_file_path
         else:
+            # E.g key_name: bronze/goodreads/book.parquet
             return f"{key}.parquet", tmp_file_path
 
     def handle_output(self, context: "OutputContext", obj: pl.DataFrame):
@@ -78,7 +80,9 @@ class MinIOIOManager(IOManager):
                 make_bucket(client, bucket_name)
 
                 # Upload file to minIO
-                # E.g bucket_name: lakehouse, key_name: bronze/goodreads/book, tmp_file_path: /tmp/file_bronze_goodreads_book_20210818100000.parquet
+                # E.g bucket_name: lakehouse,
+                # key_name: bronze/goodreads/book/book_2021.parquet,
+                # tmp_file_path: /tmp/file_bronze_goodreads_book_20210101000000.parquet
                 client.fput_object(bucket_name, key_name, tmp_file_path)
                 context.log.info(
                     f"(MinIO handle_output) Number of rows and columns: {obj.shape}"
@@ -104,9 +108,15 @@ class MinIOIOManager(IOManager):
                 # Make bucket if not exist
                 make_bucket(client=client, bucket_name=bucket_name)
 
-                # E.g bucket_name: lakehouse, key_name: bronze/goodreads/book, tmp_file_path: /tmp/file_bronze_goodreads_book_20210818100000.parquet
+                # E.g bucket_name: lakehouse,
+                # key_name: bronze/goodreads/book/book_2021.parquet,
+                # tmp_file_path: /tmp/file_bronze_goodreads_book_20210101000000.parquet
+                context.log.info(f"(MinIO load_input) from key_name: {key_name}")
                 client.fget_object(bucket_name, key_name, tmp_file_path)
                 df_data = pl.read_parquet(tmp_file_path)
+                context.log.info(
+                    f"(MinIO load_input) Got polars dataframe with shape: {df_data.shape}"
+                )
 
                 return df_data
         except Exception as e:

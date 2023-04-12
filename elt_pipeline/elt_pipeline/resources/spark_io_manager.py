@@ -52,8 +52,12 @@ class SparkIOManager(IOManager):
             f"(Spark handle_output) Got dataframe with rows count: {obj.count()}"
         )
 
-        # E.g file_path: s3a://lakehouse/silver/goodreads/book
-        file_path = "s3a://lakehouse/" + "/".join(context.asset_key.path) + ".parquet"
+        # E.g file_path: s3a://lakehouse/silver/goodreads/book/book_2021.parquet
+        # Or file_path: s3a://lakehouse/silver/goodreads/book.parquet if full load
+        file_path = "s3a://lakehouse/" + "/".join(context.asset_key.path)
+        if context.has_partition_key:
+            file_path += f"/book_{context.partition_key}"
+        file_path += ".parquet"
         context.log.debug(f"(Spark handle_output) File path: {file_path}")
         file_name = str(context.asset_key.path[-1])
         context.log.debug(f"(Spark handle_output) File name: {file_name}")
@@ -72,9 +76,10 @@ class SparkIOManager(IOManager):
         # E.g context.asset_key.path: ['silver', 'goodreads', 'book']
         context.log.debug(f"Loading input from {context.asset_key.path}...")
         file_path = "s3a://" + "/".join(context.asset_key.path)
+        if context.has_partition_key:
+            file_path += f"/book_{context.partition_key}"
+        file_path += ".parquet"
         context.log.debug("File path: " + file_path)
-        # E.g file_name: book
-        file_name = str(context.asset_key.path[-1])
 
         try:
             with get_spark_session(self._config) as spark:
