@@ -6,7 +6,7 @@ import polars as pl
 COMPUTE_KIND = "SQL"
 LAYER = "bronze"
 YEARLY = StaticPartitionsDefinition(
-    [str(year) for year in range(1900, datetime.today().year)]
+    [str(year) for year in range(1975, datetime.today().year)]
 )
 
 

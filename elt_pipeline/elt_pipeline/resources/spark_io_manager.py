@@ -2,16 +2,20 @@ from dagster import IOManager, InputContext, OutputContext
 from pyspark.sql import SparkSession, DataFrame
 
 from contextlib import contextmanager
+from datetime import datetime
 
 
 @contextmanager
-def get_spark_session(config):
+def get_spark_session(config, run_id="Spark IO Manager"):
+    executor_memory = "1g" if run_id != "Spark IO Manager" else "1200m"
     try:
         spark = (
             SparkSession.builder.master("spark://spark-master:7077")
-            .appName("Spark IO Manager")
+            .appName(run_id)
             .config("spark.driver.memory", "4g")
-            .config("spark.executor.memory", "4g")
+            .config("spark.executor.memory", executor_memory)
+            .config("spark.cores.max", "4")
+            .config("spark.executor.cores", "2")
             .config(
                 "spark.jars",
                 "/usr/local/spark/jars/delta-core_2.12-2.2.0.jar,/usr/local/spark/jars/hadoop-aws-3.3.2.jar,/usr/local/spark/jars/delta-storage-2.2.0.jar,/usr/local/spark/jars/aws-java-sdk-1.12.367.jar,/usr/local/spark/jars/s3-2.18.41.jar,/usr/local/spark/jars/aws-java-sdk-bundle-1.11.1026.jar",
@@ -48,9 +52,6 @@ class SparkIOManager(IOManager):
         """
 
         context.log.debug("(Spark handle_output) Writing output to MinIO ...")
-        context.log.debug(
-            f"(Spark handle_output) Got dataframe with rows count: {obj.count()}"
-        )
 
         # E.g file_path: s3a://lakehouse/silver/goodreads/book/book_2021.parquet
         # Or file_path: s3a://lakehouse/silver/goodreads/book.parquet if full load
@@ -75,19 +76,31 @@ class SparkIOManager(IOManager):
 
         # E.g context.asset_key.path: ['silver', 'goodreads', 'book']
         context.log.debug(f"Loading input from {context.asset_key.path}...")
-        file_path = "s3a://" + "/".join(context.asset_key.path)
+        file_path = "s3a://lakehouse/" + "/".join(context.asset_key.path)
         if context.has_partition_key:
             file_path += f"/book_{context.partition_key}"
-        file_path += ".parquet"
+        full_load = (context.metadata or {}).get("full_load", False)
+        if not full_load:
+            file_path += ".parquet"
+        # E.g file_path: s3a://lakehouse/silver/goodreads/book/book_2021.parquet
+        # Or file_path: s3a://lakehouse/silver/goodreads/book if has partitions
         context.log.debug("File path: " + file_path)
 
         try:
             with get_spark_session(self._config) as spark:
-
-                df = spark.read.parquet(file_path)
+                df = None
+                if full_load:
+                    tmp_df = spark.read.parquet(file_path + "/book_2022.parquet")
+                    book_schema = tmp_df.schema
+                    df = (
+                        spark.read.format("parquet")
+                        .options(header=True, inferSchema=False)
+                        .schema(book_schema)
+                        .load(file_path + "/*.parquet")
+                    )
+                else:
+                    df = spark.read.parquet(file_path)
                 context.log.debug(f"Loaded {df.count()} rows from {file_path}")
-
-                df.cache()
                 return df
         except Exception as e:
             raise Exception(f"Error while loading input: {e}")

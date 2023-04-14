@@ -9,6 +9,7 @@ from .resources.mysql_io_manager import MySQLIOManager
 from .resources.minio_io_manager import MinIOIOManager
 from .resources.gdrive_io_manager import GDriveIOManager
 from .resources.spark_io_manager import SparkIOManager
+from .resources.psql_io_manager import PostgreSQLIOManager
 
 
 MYSQL_CONFIG = {
@@ -68,11 +69,17 @@ defs = Definitions(
         bronze_images_and_files_download,
         silver_cleaned_book,
         silver_cleaned_genre,
+        silver_collected_book,
+        silver_isbn,
+        silver_collected_genre,
+        silver_collected_book_genre,
+        book_genre,
     ],
     resources={
         "mysql_io_manager": MySQLIOManager(MYSQL_CONFIG),
         "minio_io_manager": MinIOIOManager(MINIO_CONFIG),
         "gdrive_io_manager": GDriveIOManager(GDRIVE_CONFIG),
         "spark_io_manager": SparkIOManager(SPARK_CONFIG),
+        "psql_io_manager": PostgreSQLIOManager(PSQL_CONFIG),
     },
 )

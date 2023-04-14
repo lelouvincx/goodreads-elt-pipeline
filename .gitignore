@@ -12,6 +12,7 @@ minio/
 dataset/
 streamlit/
 .coverage
+.spark_session.txt
 
 # Google secrets
 gdrive_client_secret.json
