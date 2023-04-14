@@ -7,7 +7,7 @@ from datetime import datetime
 
 @contextmanager
 def get_spark_session(config, run_id="Spark IO Manager"):
-    executor_memory = "1g" if run_id != "Spark IO Manager" else "1200m"
+    executor_memory = "1g" if run_id != "Spark IO Manager" else "1500m"
     try:
         spark = (
             SparkSession.builder.master("spark://spark-master:7077")

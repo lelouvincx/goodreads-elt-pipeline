@@ -1,10 +1,7 @@
-from dagster import Definitions
+from dagster import Definitions, load_assets_from_modules
 import os
 
-from .assets.bronze import *
-from .assets.silver import *
-from .assets.gold import *
-
+from . import assets
 from .resources.mysql_io_manager import MySQLIOManager
 from .resources.minio_io_manager import MinIOIOManager
 from .resources.gdrive_io_manager import GDriveIOManager
@@ -60,26 +57,16 @@ PSQL_CONFIG = {
     "password": os.getenv("POSTGRES_PASSWORD"),
 }
 
+
+resources = {
+    "mysql_io_manager": MySQLIOManager(MYSQL_CONFIG),
+    "minio_io_manager": MinIOIOManager(MINIO_CONFIG),
+    "gdrive_io_manager": GDriveIOManager(GDRIVE_CONFIG),
+    "spark_io_manager": SparkIOManager(SPARK_CONFIG),
+    "psql_io_manager": PostgreSQLIOManager(PSQL_CONFIG),
+}
+
 defs = Definitions(
-    assets=[
-        bronze_genre,
-        bronze_book,
-        bronze_book_genre,
-        bronze_book_download_link,
-        bronze_images_and_files_download,
-        silver_cleaned_book,
-        silver_cleaned_genre,
-        silver_collected_book,
-        silver_isbn,
-        silver_collected_genre,
-        silver_collected_book_genre,
-        book_genre,
-    ],
-    resources={
-        "mysql_io_manager": MySQLIOManager(MYSQL_CONFIG),
-        "minio_io_manager": MinIOIOManager(MINIO_CONFIG),
-        "gdrive_io_manager": GDriveIOManager(GDRIVE_CONFIG),
-        "spark_io_manager": SparkIOManager(SPARK_CONFIG),
-        "psql_io_manager": PostgreSQLIOManager(PSQL_CONFIG),
-    },
+    assets=load_assets_from_modules([assets]),
+    resources=resources,
 )

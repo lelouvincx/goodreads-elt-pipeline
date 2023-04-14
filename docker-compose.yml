@@ -117,6 +117,16 @@ services:
     env_file: .env
     networks:
       - de_network
+      # de_metabase:
+      #   image: metabase/metabase:latest
+      #   container_name: de_metabase
+      #   volumes:
+      #     - ./storage/metabase_data:/metabase_data
+      #   ports:
+      #     - "3000:3000"
+      #   enf_file: .env
+      #   networks:
+      #     - de_network
 networks:
   de_network:
     driver: bridge
