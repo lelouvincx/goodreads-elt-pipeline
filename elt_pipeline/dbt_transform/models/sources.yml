@@ -1,0 +1,9 @@
+version: 2
+sources:
+  - name: gold
+    tables:
+      - name: genre
+      - name: book_genre
+      - name: book_with_info
+      - name: book_with_publish
+      - name: book_with_rating

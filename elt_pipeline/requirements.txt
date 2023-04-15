@@ -1,10 +1,9 @@
 pandas==1.5.3
 polars==0.16.16
-dagit==1.2.3
-dagster==1.2.3
-dagster-postgres==0.18.3
-dagster-dbt==0.18.3
-dagster-spark==0.18.3
+dagit==1.2.7
+dagster==1.2.7
+dagster-postgres==0.18.7
+dagster-dbt==0.18.7
 SQLAlchemy==1.4.46
 pymysql==1.0.2
 cryptography==38.0.3
@@ -16,3 +15,6 @@ google-api-python-client==2.84.0
 google-auth-httplib2==0.1.0
 google-auth-oauthlib==1.0.0
 pyspark==3.3.2
+dbt-core==1.4.5
+dbt-postgres==1.4.5
+pytz==2022.7.1
