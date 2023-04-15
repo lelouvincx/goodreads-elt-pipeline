@@ -30,11 +30,11 @@ YEARLY = StaticPartitionsDefinition(
         "columns": ["isbn", "name", "authors", "language", "pagesnumber"],
     },
     io_manager_key="psql_io_manager",
-    key_prefix=["goodreads", "gold"],  # Database: goodreads, Schema: gold
+    key_prefix=["gold"],  # Database: goodreads, Schema: gold
     compute_kind=COMPUTE_KIND,
     group_name=LAYER,
 )
-def warehouse_book_with_info(context, gold_book_with_info: DataFrame):
+def book_with_info(context, gold_book_with_info: DataFrame):
     """
     Load book_with_info data from spark to postgres
     """
@@ -69,11 +69,11 @@ def warehouse_book_with_info(context, gold_book_with_info: DataFrame):
         "columns": ["isbn", "publisher", "publishyear", "publishmonth", "publishday"],
     },
     io_manager_key="psql_io_manager",
-    key_prefix=["goodreads", "gold"],  # Database: goodreads, Schema: gold
+    key_prefix=["gold"],  # Database: goodreads, Schema: gold
     compute_kind=COMPUTE_KIND,
     group_name=LAYER,
 )
-def warehouse_book_with_publish(context, gold_book_with_publish: DataFrame):
+def book_with_publish(context, gold_book_with_publish: DataFrame):
     """
     Load book_with_publish data from spark to postgres
     """
@@ -126,11 +126,11 @@ def warehouse_book_with_publish(context, gold_book_with_publish: DataFrame):
         ],
     },
     io_manager_key="psql_io_manager",
-    key_prefix=["goodreads", "gold"],  # Database: goodreads, Schema: gold
+    key_prefix=["gold"],  # Database: goodreads, Schema: gold
     compute_kind=COMPUTE_KIND,
     group_name=LAYER,
 )
-def warehouse_book_with_rating(context, gold_book_with_rating: DataFrame):
+def book_with_rating(context, gold_book_with_rating: DataFrame):
     """
     Load book_with_rating data from spark to postgres
     """
@@ -175,14 +175,11 @@ def warehouse_book_with_rating(context, gold_book_with_rating: DataFrame):
         "columns": ["isbn", "link"],
     },
     io_manager_key="psql_io_manager",
-    key_prefix=[
-        "goodreads",
-        "recommendations",
-    ],  # Database: goodreads, Schema: recommendations
+    key_prefix=["recommendations"],
     compute_kind=COMPUTE_KIND,
     group_name=LAYER,
 )
-def warehouse_book_download_link(context, bronze_book_download_link: pl.DataFrame):
+def book_download_link(context, bronze_book_download_link: pl.DataFrame):
     """
     Load book_download_link data from minio to postgres
     """

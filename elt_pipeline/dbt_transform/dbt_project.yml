@@ -30,7 +30,3 @@ models:
     # Config indicated by + and applies to all files under models/example/
     recommendations:
       +materialized: table
-    analytics:
-      +materialized: table
-    example:
-      +materialized: view

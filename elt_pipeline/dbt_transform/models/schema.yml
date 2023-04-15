@@ -1,0 +1,28 @@
+version: 2
+models:
+  - name: search
+    description: Search index table for books
+    columns:
+      - name: isbn
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: name
+        description: Long varchar, can be null, duplicated, ...
+  - name: criteria
+    description: More criteria to filter books
+    columns:
+      - name: isbn
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: downloadlink
+        description: Long varchar, can be null, must be unique, ...
+        tests:
+          - unique
+      - name: avgrating
+        description: integer, from 0 -> 5
+        tests:
+          - not_null

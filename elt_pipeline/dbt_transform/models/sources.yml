@@ -7,3 +7,6 @@ sources:
       - name: book_with_info
       - name: book_with_publish
       - name: book_with_rating
+  - name: recommendations
+    tables:
+      - name: book_download_link

@@ -32,10 +32,10 @@ YEARLY = StaticPartitionsDefinition(
             key_prefix=["gold", "goodreads"],
             group_name="gold",
         ),
-        "warehouse_genre": AssetOut(
+        "genre": AssetOut(
             description="Load genre data from spark to postgres",
             io_manager_key="psql_io_manager",
-            key_prefix=["goodreads", "gold"],  # Database: goodreads, Schema: gold
+            key_prefix=["gold"],  # Database: goodreads, Schema: gold
             metadata={
                 "primary_keys": ["id", "name"],
                 "columns": ["id", "name"],
@@ -93,10 +93,10 @@ def genre(context, silver_collected_genre: DataFrame):
             key_prefix=["gold", "goodreads"],
             group_name="gold",
         ),
-        "warehouse_book_genre": AssetOut(
+        "book_genre": AssetOut(
             description="Load book_genre data from spark to postgres",
             io_manager_key="psql_io_manager",
-            key_prefix=["goodreads", "gold"],  # Database: goodreads, Schema: gold
+            key_prefix=["gold"],  # Database: goodreads, Schema: gold
             metadata={
                 "primary_keys": ["bookisbn", "genreid"],
                 "columns": ["bookisbn", "genreid"],

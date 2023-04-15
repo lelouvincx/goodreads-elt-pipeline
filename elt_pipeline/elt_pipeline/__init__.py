@@ -1,4 +1,5 @@
-from dagster import Definitions, load_assets_from_modules
+from dagster import Definitions, load_assets_from_modules, file_relative_path
+from dagster_dbt import dbt_cli_resource
 import os
 
 from . import assets
@@ -57,6 +58,9 @@ PSQL_CONFIG = {
     "password": os.getenv("POSTGRES_PASSWORD"),
 }
 
+DBT_PROJECT_PATH = file_relative_path(__file__, "../dbt_transform")
+DBT_PROFILES = file_relative_path(__file__, "../dbt_transform/config")
+
 
 resources = {
     "mysql_io_manager": MySQLIOManager(MYSQL_CONFIG),
@@ -64,6 +68,12 @@ resources = {
     "gdrive_io_manager": GDriveIOManager(GDRIVE_CONFIG),
     "spark_io_manager": SparkIOManager(SPARK_CONFIG),
     "psql_io_manager": PostgreSQLIOManager(PSQL_CONFIG),
+    "dbt": dbt_cli_resource.configured(
+        {
+            "project_dir": DBT_PROJECT_PATH,
+            "profiles_dir": DBT_PROFILES,
+        }
+    ),
 }
 
 defs = Definitions(
