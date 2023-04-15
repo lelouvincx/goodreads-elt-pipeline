@@ -1,5 +1,15 @@
 version: 2
 models:
+  - name: search_prior
+    description: Search index table for books with higher priority
+    columns:
+      - name: isbn
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: name
+        description: Long varchar, can be null, duplicated, ...
   - name: search
     description: Search index table for books
     columns:

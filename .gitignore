@@ -2,15 +2,18 @@
 venv/
 Pipfile.lock
 
+# Other env
 .env
 .spark_master.env
 .spark_worker.env
+.streamlit/*
+
+# Cache
 .cache*
 __pycache__/
 storage/
 minio/
 dataset/
-streamlit/
 .coverage
 .spark_session.txt
 

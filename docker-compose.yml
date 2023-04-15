@@ -1,41 +1,5 @@
 version: "3.9"
 services:
-  elt_pipeline:
-    build:
-      context: ./elt_pipeline
-      dockerfile: Dockerfile
-    image: elt_pipeline:latest
-    container_name: elt_pipeline
-    volumes:
-      - ./elt_pipeline:/opt/dagster/app/elt_pipeline
-    env_file: .env
-    ports:
-      - "4040:4040"
-    networks:
-      - de_network
-  spark-master:
-    build:
-      context: ./dockerimages/spark
-      dockerfile: Dockerfile
-    image: spark_master:latest
-    container_name: spark-master
-    volumes:
-      - ./dockerimages/spark/spark-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf
-    expose:
-      - "7077"
-    ports:
-      - "7077:7077"
-      - "8080:8080"
-    env_file: .spark_master.env
-    networks:
-      - de_network
-  spark-worker:
-    image: docker.io/bitnami/spark:3.3.2
-    env_file: .spark_worker.env
-    deploy:
-      replicas: 2
-    networks:
-      - de_network
   de_mysql:
     image: mysql:8.0
     container_name: de_mysql
@@ -45,19 +9,6 @@ services:
       - ./load_dataset:/tmp/load_dataset
     ports:
       - "3306:3306"
-    env_file: .env
-    networks:
-      - de_network
-  de_psql:
-    image: postgres:14-alpine
-    container_name: de_psql
-    volumes:
-      - ./storage/postgres_data:/var/lib/postgresql/data
-      - ./pg_hba.conf:/tmp/pg_hba.conf
-      - ./load_dataset:/tmp/load_dataset
-    command: ["postgres", "-c", "hba_file=/tmp/pg_hba.conf"]
-    ports:
-      - "5432:5432"
     env_file: .env
     networks:
       - de_network
@@ -84,6 +35,19 @@ services:
       /usr/bin/mc policy set public minio/lakehouse; exit 0; "
     depends_on:
       - minio
+    networks:
+      - de_network
+  elt_pipeline:
+    build:
+      context: ./elt_pipeline
+      dockerfile: Dockerfile
+    image: elt_pipeline:latest
+    container_name: elt_pipeline
+    volumes:
+      - ./elt_pipeline:/opt/dagster/app/elt_pipeline
+    env_file: .env
+    ports:
+      - "4040:4040"
     networks:
       - de_network
   de_dagster_dagit:
@@ -117,16 +81,65 @@ services:
     env_file: .env
     networks:
       - de_network
-      # de_metabase:
-      #   image: metabase/metabase:latest
-      #   container_name: de_metabase
-      #   volumes:
-      #     - ./storage/metabase_data:/metabase_data
-      #   ports:
-      #     - "3000:3000"
-      #   enf_file: .env
-      #   networks:
-      #     - de_network
+  spark-master:
+    build:
+      context: ./dockerimages/spark
+      dockerfile: Dockerfile
+    image: spark_master:latest
+    container_name: spark-master
+    volumes:
+      - ./dockerimages/spark/spark-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf
+    expose:
+      - "7077"
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+    env_file: .spark_master.env
+    networks:
+      - de_network
+  spark-worker:
+    image: docker.io/bitnami/spark:3.3.2
+    env_file: .spark_worker.env
+    deploy:
+      replicas: 2
+    networks:
+      - de_network
+  de_psql:
+    image: postgres:14-alpine
+    container_name: de_psql
+    volumes:
+      - ./storage/postgres_data:/var/lib/postgresql/data
+      - ./pg_hba.conf:/tmp/pg_hba.conf
+      - ./load_dataset:/tmp/load_dataset
+    command: ["postgres", "-c", "hba_file=/tmp/pg_hba.conf"]
+    ports:
+      - "5432:5432"
+    env_file: .env
+    networks:
+      - de_network
+  de_streamlit:
+    build:
+      context: ./dockerimages/streamlit
+      dockerfile: Dockerfile
+    image: de_streamlit:latest
+    container_name: de_streamlit
+    volumes:
+      - ./app:/app
+    env_file: .env
+    ports:
+      - "8501:8501"
+    networks:
+      - de_network
+  de_metabase:
+    image: metabase/metabase:latest
+    container_name: de_metabase
+    volumes:
+      - ./storage/metabase_data:/metabase_data
+    ports:
+      - "3030:3000"
+    env_file: .env
+    networks:
+      - de_network
 networks:
   de_network:
     driver: bridge

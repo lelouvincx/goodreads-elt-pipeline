@@ -1,0 +1,6 @@
+streamlit==1.21.0
+psycopg2-binary==2.9.6
+altair==4.2.2
+pandas==1.5.3
+polars==0.16.16
+minio==7.1.13

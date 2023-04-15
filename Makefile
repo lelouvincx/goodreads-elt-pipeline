@@ -31,6 +31,9 @@ build-spark:
 build-pipeline:
 	docker build -t elt_pipeline:latest ./elt_pipeline
 
+build-streamlit:
+	docker build -t de_streamlit:latest ./dockerimages/streamlit
+
 up-bg:
 	docker compose --env-file .env up -d
 
