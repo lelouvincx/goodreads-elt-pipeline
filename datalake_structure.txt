@@ -1,0 +1,28 @@
+lakehouse
+├── bronze
+│   └── goodreads
+│   │   ├── book
+│   │   ├── genre
+│   │   ├── book_genre
+│   │   ├── book_download_link
+├── silver
+│   └── goodreads
+│   │   ├── cleaned_book
+│   │   ├── collected_book
+│   │   ├── cleaned_genre
+│   │   ├── collected_genre
+│   │   ├── collcted_book_genre
+│   │   ├── isbn
+├── gold
+│   └── goodreads
+│   │   ├── genre
+│   │   ├── book_genre
+│   │   ├── book_with_info
+│   │   ├── book_with_publish
+│   │   ├── book_with_rating
+├── files
+│   └── loremipsum.epub
+│   └── ...
+├── images
+│   └── loremipsum.jpeg
+│   └── ...

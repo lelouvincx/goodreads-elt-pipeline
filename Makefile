@@ -69,6 +69,3 @@ to_psql_no_db:
 
 psql_create:
 	docker exec -it de_psql psql postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} -f /tmp/load_dataset/psql_datasource.sql -a
-
-dbt_install_deps:
-	docker exec -it dbt_analytics cd /opt/dagster/app/dbt_analytics && dbt deps

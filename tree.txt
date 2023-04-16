@@ -1,0 +1,77 @@
+├── app
+│   ├── .streamlit
+│   │   └── secrets.toml
+│   └── streamlit_app.py
+├── dagster_home
+│   ├── dagster.yaml
+│   └── workspace.yaml
+├── dataset
+│   ├── book_download_link.csv
+│   ├── book_full.csv
+│   ├── book_genre.csv
+│   ├── genre.csv
+│   └── my_book.csv
+├── docker-compose.yml
+├── dockerimages
+│   ├── dagster
+│   │   ├── Dockerfile
+│   │   └── requirements.txt
+│   ├── spark
+│   │   ├── Dockerfile
+│   │   └── spark-defaults.conf
+│   └── streamlit
+│       ├── Dockerfile
+│       └── requirements.txt
+├── EDA.ipynb
+├── elt_pipeline
+│   ├── dbt_transform
+│   │   ├── config
+│   │   │   ├── profiles.yml
+│   │   ├── dbt_packages
+│   │   ├── dbt_project.yml
+│   │   ├── models
+│   │   │   ├── recommendations
+│   │   │   │   ├── criteria.sql
+│   │   │   │   ├── search_prior.sql
+│   │   │   │   └── search.sql
+│   │   │   ├── schema.yml
+│   │   │   └── sources.yml
+│   │   │   ├── manifest.json
+│   ├── Dockerfile
+│   ├── elt_pipeline
+│   │   ├── assets
+│   │   │   ├── bronze.py
+│   │   │   ├── gold.py
+│   │   │   ├── silver.py
+│   │   │   └── warehouse.py
+│   │   ├── client_secret.json
+│   │   ├── resources
+│   │   │   ├── gdrive_io_manager.py
+│   │   │   ├── minio_io_manager.py
+│   │   │   ├── mysql_io_manager.py
+│   │   │   ├── psql_io_manager.py
+│   │   │   └── spark_io_manager.py
+│   │   └── token_drive_v3.pickle
+│   ├── pyproject.toml
+│   ├── requirements.txt
+│   ├── setup.cfg
+│   └── setup.py
+├── .env
+├── env.template
+├── .git
+├── .gitignore
+├── load_dataset
+│   ├── mysql_datasource.sql
+│   ├── mysql_load.sql
+│   └── psql_datasource.sql
+├── Makefile
+├── pg_hba.conf
+├── Pipfile
+├── Pipfile.lock
+├── README.md
+├── requirements.txt
+├── .spark_master.env
+├── spark_master.env.template
+├── .spark_session.txt
+├── spark_workder.env.template
+├── .spark_worker.env
