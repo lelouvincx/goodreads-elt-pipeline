@@ -10,7 +10,7 @@ Project này hoàn thành dựa trên kiến thức đã học được từ kh�
 
 Mình thích đọc sách. Và mình có một chiếc máy đọc sách kindle dùng cho việc đọc hàng ngày.
 
-![](./images/blog_image_1.jpg "My Kindle")
+![](./images/Introduction.jpg "My Kindle")
 
 Có một điểm mình thích ở chiếc kindle là nó có một địa chỉ email riêng biệt được amazon cấp phát. Nếu sử dụng email của mình để gửi file sách (dạng .epub/.mobi), hệ thống trên amazon sẽ tự động gửi file sách vào kindle giúp mình, miễn là có kết nối mạng.
 
