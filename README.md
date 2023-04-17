@@ -268,9 +268,7 @@ MB_DB_FILE=/metabase_data/metabase.db
 
 Bạn có thể thay các thông tin về user, pasword, ...
 
-{{< alert "circle-info" >}}
-Chỉ dùng cho development, không dùng cho production.
-{{< /alert >}}
+**Chỉ dùng cho development, không dùng cho production.**
 
 Bây giờ chúng ta import dataset spotify (dạng csv) vào mySQL:
 
