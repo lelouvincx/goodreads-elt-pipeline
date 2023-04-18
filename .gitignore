@@ -28,3 +28,6 @@ dagster_home/.logs_queue/
 dagster_home/.telemetry/
 dagster_home/history/
 dagster_home/schedules/*
+
+# EDA
+EDA.ipynb
