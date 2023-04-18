@@ -1,5 +1,7 @@
 # goodreads-elt-pipeline
 
+For Vietnamese edition, please visit https://lelouvincx.github.io/projects/fde2-goodreads-elt-pipeline/
+
 In this project, I will guide you on building a basic data pipeline using the ELT model (extract - load - transform), using the dataset from Goodreads to ingest and transform data to serve a book recommendation system for yourself.
 
 This project is completed based on the knowledge learned from the Fundamental Data Engineering 02 course of AIDE. Special thanks to Mr. Nguyen Thanh Binh, Mr. Ong Xuan Hong, and Mr. Hung Le.
