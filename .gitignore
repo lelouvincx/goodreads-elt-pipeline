@@ -30,4 +30,4 @@ dagster_home/history/
 dagster_home/schedules/*
 
 # EDA
-EDA.ipynb
+./EDA.ipynb

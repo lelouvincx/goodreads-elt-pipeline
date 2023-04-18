@@ -170,7 +170,7 @@ To develop this pipeline, download and install these softwares:
 
 1. [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 2. [Docker](https://docs.docker.com/engine/install/) with at least 4GB RAM, 6 core CPU, 2GB swap, 16GB disk
-3. [CMake](https://cmake.org/install/), nếu dùng hệ máy UNIX (Linux/MacOS), check `make --version` được cài sẵn
+3. [CMake](https://cmake.org/install/), nếu dùng hệ máy UNIX (Linux/MacOS), check `make --version` already installed
 4. Python 3.x (3.9.16 recommended as the Spark image runs on this version, installing via asdf is recommended) and a virtual environment (pipenv recommended)
 5. A local machine that has freed the following ports: 3306, 5432, 9000, 9001, 3001, 8501, 4040, 7077, 8080, 3030
 6. Dbeaver or any other DB client (if not available, can use command-line)
