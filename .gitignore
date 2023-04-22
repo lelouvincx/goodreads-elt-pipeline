@@ -12,8 +12,8 @@ Pipfile.lock
 .cache*
 __pycache__/
 storage/
-minio/
 dataset/
+minio/
 .coverage
 .spark_session.txt
 

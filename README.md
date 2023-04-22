@@ -179,14 +179,64 @@ To develop this pipeline, download and install these softwares:
 
 If using Windows, set up WSL2 and a local Ubuntu virtual machine, then install the above software for Ubuntu.
 
-### 4.2 Setup local infrastructure
-
-Clone repository:
+Clone the repository
 
 ```bash
 git clone https://github.com/lelouvincx/goodreads-elt-pipeline.git project
 cd project
+```
 
+### 4.2 Setup google drive api
+
+Firstly we need to create an OAuth 2.0 token to google, [Google API Console](https://console.developers.google.com/).
+
+Select `create new project`:
+
+![](./images/gdrive_1.png)
+
+Fill in project's name (goodreads-elt_pipeline), choose location (default `No organization`).
+
+![](./images/gdrive_2.png)
+
+After creating project, select tab `Library`:
+
+![](./images/gdrive_3.png)
+
+Search `Google Drive API`, enable it.
+
+![](./images/gdrive_4.png)
+
+![](./images/gdrive_5.png)
+
+Next, select tab `OAuth consent screen`,
+
+![](./images/gdrive_6.png)
+
+Fill in below information:
+
+![](./images/gdrive_7.png)
+
+In `scopes`, select `add or remove scopes`, look for `google drive api, readonly` then tick, `save and continue` until end.
+
+![](./images/gdrive_8.png)
+
+Select tab `credentials` -> `create credentials` then `OAuth client ID`.
+
+![](./images/gdrive_9.png)
+
+Select `Desktop app`, name as you like (default: goodreads-elt-pipeline)
+
+![](./images/gdrive_10.png)
+
+Download json and place in `project/elt_pipeline/elt_pipeline`
+
+![](./images/gdrive_11.png)
+
+### 4.3 Setup local infrastructure
+
+Clone repository:
+
+```bash
 # Create env file
 touch .env
 cp env.template .env
@@ -323,7 +373,7 @@ Check there's 11 running services:
 - Metabase: 3030
 - Streamlit: 8501
 
-### 4.3 Import data into MySQL
+### 4.4 Import data into MySQL
 
 Now we import the Goodreads dataset (unser csv format) into MySQL:
 
@@ -346,13 +396,13 @@ make mysql_create
 make mysql_load
 ```
 
-### 4.4 Create schema in Postgres
+### 4.5 Create schema in Postgres
 
 ```bash
 make psql_create
 ```
 
-### 4.5 User interfaces
+### 4.6 User interfaces
 
 1. <http://localhost:3001> - Dagit
 2. <http://localhost:4040> - Spark jobs
