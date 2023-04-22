@@ -1,6 +1,6 @@
 # goodreads-elt-pipeline
 
-For Vietnamese edition, please visit https://lelouvincx.github.io/projects/fde2-goodreads-elt-pipeline/
+For Vietnamese edition, please visit <https://lelouvincx.github.io/projects/fde2-goodreads-elt-pipeline/>
 
 In this project, I will guide you on building a basic data pipeline using the ELT model (extract - load - transform), using the dataset from Goodreads to ingest and transform data to serve a book recommendation system for yourself.
 
@@ -185,6 +185,8 @@ Clone the repository
 git clone https://github.com/lelouvincx/goodreads-elt-pipeline.git project
 cd project
 ```
+
+Download the csv dataset [here](https://www.kaggle.com/datasets/lelouvincx/goodreads-elt-pipeline?select=book.csv), then place it in `project/dataset`
 
 ### 4.2 Setup google drive api
 
